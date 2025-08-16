@@ -1,23 +1,14 @@
+/* global module */
 // Contador interno digital para mantener la ventaja de la casa del 2.7%
 class HouseEdgeCalculator {
   constructor() {
-    // Configuración de apuestas: 1€ para ganar 10€, 50€ o 100€
-    // Probabilidades calculadas matemáticamente para mantener exactamente 2.7% de ventaja de la casa
+    // Configuración de apuestas y tamaño de ruletas
+    // targetProbability mantiene la ventaja de la casa del 2.7%
     this.betOptions = [
-      { amount: 1, prize: 10, targetProbability: 0.0973 }, // 9.73% para ganar 10€ (ventaja casa: 2.7%)
-      { amount: 1, prize: 50, targetProbability: 0.01946 }, // 1.946% para ganar 50€ (ventaja casa: 2.7%)
-      { amount: 1, prize: 100, targetProbability: 0.00973 } // 0.973% para ganar 100€ (ventaja casa: 2.7%)
+      { amount: 1, prize: 10, targetProbability: 0.0973, numbers: 10 },
+      { amount: 1, prize: 50, targetProbability: 0.01946, numbers: 50 },
+      { amount: 1, prize: 100, targetProbability: 0.00973, numbers: 100 }
     ];
-    
-    // Números de la ruleta europea estándar (37 números: 0-36)
-    this.rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
-    
-    // Números ganadores para cada tipo de apuesta (basado en probabilidades calculadas)
-    this.winningNumbers = {
-      10: [7, 17, 29, 35], // 4 números de 37 = 10.81% probabilidad
-      50: [3], // 1 número de 37 = 2.7% probabilidad (ajustado dinámicamente)
-      100: [26] // 1 número de 37 = 2.7% probabilidad (ajustado dinámicamente)
-    };
     
     // Contador interno para mantener la ventaja de la casa
     this.houseEdgeTracker = {
@@ -42,21 +33,6 @@ class HouseEdgeCalculator {
     return Math.random() < betConfig.targetProbability;
   }
   
-  // Seleccionar número ganador específico
-  selectWinningNumber(betType, shouldWin) {
-    if (shouldWin) {
-      // Seleccionar aleatoriamente de los números ganadores para este tipo de apuesta
-      const winningOptions = this.winningNumbers[betType];
-      return winningOptions[Math.floor(Math.random() * winningOptions.length)];
-    } else {
-      // Seleccionar un número que NO esté en los números ganadores
-      const losingNumbers = this.rouletteNumbers.filter(num => 
-        !this.winningNumbers[betType].includes(num)
-      );
-      return losingNumbers[Math.floor(Math.random() * losingNumbers.length)];
-    }
-  }
-  
   // Procesar una apuesta y devolver el resultado
   processBet(betType) {
     const betConfig = this.betOptions.find(opt => opt.prize === betType);
@@ -66,9 +42,9 @@ class HouseEdgeCalculator {
     
     // Determinar si el jugador debe ganar
     const shouldWin = this.shouldPlayerWin(betType);
-    
-    // Seleccionar el número específico
-    const winningNumber = this.selectWinningNumber(betType, shouldWin);
+
+    // Seleccionar número aleatorio dentro del rango de la ruleta correspondiente
+    const winningNumber = Math.floor(Math.random() * betConfig.numbers) + 1;
     
     // Actualizar estadísticas
     this.houseEdgeTracker.totalBets += betConfig.amount;

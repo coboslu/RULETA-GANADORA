@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent } from '@/components/ui/card.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
 import { Wallet, Play, RotateCcw, Plus } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion as Motion, AnimatePresence } from 'framer-motion'
 import PaymentIntegration from './components/PaymentIntegration.jsx'
-import twoDRouletteNoZeroLine from './assets/2d-roulette-corrected.png'
+import RouletteWheel from './components/RouletteWheel.jsx'
 import './App.css'
 
 function App() {
@@ -47,8 +47,21 @@ function App() {
     { amount: 1, prize: 100, color: 'from-purple-500 to-purple-600', probability: '0.97%' }
   ]
 
-  // Números de la ruleta europea (0-36)
-  const rouletteNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26]
+  // Números de la ruleta según tipo de apuesta
+  const numbersByBet = {
+    10: Array.from({ length: 10 }, (_, i) => i + 1),
+    50: Array.from({ length: 50 }, (_, i) => i + 1),
+    100: Array.from({ length: 100 }, (_, i) => i + 1)
+  }
+
+  const [currentNumbers, setCurrentNumbers] = useState(numbersByBet[10])
+
+  useEffect(() => {
+    if (selectedBet) {
+      setCurrentNumbers(numbersByBet[selectedBet.prize])
+      setRotation(0)
+    }
+  }, [selectedBet])
 
   const spinRoulette = () => {
     if (!selectedBet || isSpinning || balance < selectedBet.amount || !houseEdgeCalculator) return
@@ -70,14 +83,12 @@ function App() {
     const isWin = gameResult.isWin
     
     // Calcular rotación para que el número ganador quede exactamente bajo la flecha
-    const degreesPerNumber = 360 / 37  // 9.73° por número
-    const numberIndex = rouletteNumbers.indexOf(winningNumber)
-    
-    // Calcular cuántos grados necesitamos rotar para que el número ganador quede arriba
+    const degreesPerNumber = 360 / currentNumbers.length
+    const numberIndex = currentNumbers.indexOf(winningNumber)
     const targetAngle = numberIndex * degreesPerNumber
     
     // Añadir varias vueltas completas para el efecto visual
-    const spins = 5 + Math.random() * 3 // 5-8 vueltas
+    const spins = 8 + Math.random() * 4 // 8-12 vueltas para un giro más prolongado
     const baseRotation = spins * 360
     
     // La rotación final debe ser: vueltas base + rotación para alinear el número
@@ -109,7 +120,7 @@ function App() {
       }
 
       setIsSpinning(false)
-    }, 4000)
+    }, 8000)
   }
 
   const resetGame = () => {
@@ -164,28 +175,12 @@ function App() {
           </div>
         )}
 
-        {/* Ruleta realista */}
+        {/* Ruleta minimalista */}
         <div className="flex justify-center mb-12">
           <div className="relative">
-            <motion.div
-              className="w-[500px] h-[500px] relative"
-              animate={{ rotate: rotation }}
-              transition={{ 
-                duration: isSpinning ? 4 : 0, 
-                ease: isSpinning ? "easeOut" : "linear"
-              }}
-              style={{
-                filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.3)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2))'
-              }}
-            >
-              <img 
-                src={twoDRouletteNoZeroLine} 
-                alt="Roulette Wheel" 
-                className="w-full h-full object-cover rounded-full"
-              />
-            </motion.div>
-            
-            {/* Indicador de la ruleta mejorado - apuntando hacia adentro */}
+            <RouletteWheel numbers={currentNumbers} rotation={rotation} isSpinning={isSpinning} />
+
+            {/* Indicador de la ruleta */}
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 translate-y-2 z-10">
               <div className="flex flex-col items-center">
                 <div className="w-0 h-0 border-l-4 border-r-4 border-t-8 border-l-transparent border-r-transparent border-t-red-600 drop-shadow-lg"></div>
@@ -198,7 +193,7 @@ function App() {
         {/* Resultado */}
         <AnimatePresence>
           {result && (
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
@@ -224,7 +219,7 @@ function App() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
 
