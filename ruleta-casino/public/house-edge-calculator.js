@@ -1,3 +1,4 @@
+/* global module */
 // Contador interno digital para mantener la ventaja de la casa del 2.7%
 class HouseEdgeCalculator {
   constructor() {
