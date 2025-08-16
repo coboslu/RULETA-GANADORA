@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent } from '@/components/ui/card.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
 import { Wallet, Play, RotateCcw, Plus } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion as Motion, AnimatePresence } from 'framer-motion'
 import PaymentIntegration from './components/PaymentIntegration.jsx'
-import twoDRouletteNoZeroLine from './assets/2d-roulette-corrected.png'
+import realisticRoulette from './assets/realistic-roulette.png'
 import './App.css'
 
 function App() {
@@ -77,7 +77,7 @@ function App() {
     const targetAngle = numberIndex * degreesPerNumber
     
     // Añadir varias vueltas completas para el efecto visual
-    const spins = 5 + Math.random() * 3 // 5-8 vueltas
+    const spins = 8 + Math.random() * 4 // 8-12 vueltas para un giro más prolongado
     const baseRotation = spins * 360
     
     // La rotación final debe ser: vueltas base + rotación para alinear el número
@@ -109,7 +109,7 @@ function App() {
       }
 
       setIsSpinning(false)
-    }, 4000)
+    }, 8000)
   }
 
   const resetGame = () => {
@@ -167,23 +167,23 @@ function App() {
         {/* Ruleta realista */}
         <div className="flex justify-center mb-12">
           <div className="relative">
-            <motion.div
+            <Motion.div
               className="w-[500px] h-[500px] relative"
               animate={{ rotate: rotation }}
-              transition={{ 
-                duration: isSpinning ? 4 : 0, 
+              transition={{
+                duration: isSpinning ? 8 : 0,
                 ease: isSpinning ? "easeOut" : "linear"
               }}
               style={{
                 filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.3)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2))'
               }}
             >
-              <img 
-                src={twoDRouletteNoZeroLine} 
-                alt="Roulette Wheel" 
+              <img
+                src={realisticRoulette}
+                alt="Roulette Wheel"
                 className="w-full h-full object-cover rounded-full"
               />
-            </motion.div>
+            </Motion.div>
             
             {/* Indicador de la ruleta mejorado - apuntando hacia adentro */}
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 translate-y-2 z-10">
@@ -198,7 +198,7 @@ function App() {
         {/* Resultado */}
         <AnimatePresence>
           {result && (
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
@@ -224,7 +224,7 @@ function App() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
 

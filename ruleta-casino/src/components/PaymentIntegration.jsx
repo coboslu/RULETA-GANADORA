@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
 import { CreditCard, Smartphone, Apple, Chrome, X } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion as Motion } from 'framer-motion'
 
 const PaymentIntegration = ({ isOpen, onClose, onPaymentSuccess, amount }) => {
   const [isProcessing, setIsProcessing] = useState(false)
@@ -67,14 +67,14 @@ const PaymentIntegration = ({ isOpen, onClose, onPaymentSuccess, amount }) => {
 
   if (isProcessing) {
     return (
-      <motion.div
+      <Motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4 z-50"
       >
         <Card className="max-w-sm w-full bg-white/95 backdrop-blur border-gray-200 shadow-xl">
           <CardContent className="pt-8 pb-8 text-center">
-            <motion.div
+            <Motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-6"
@@ -92,18 +92,18 @@ const PaymentIntegration = ({ isOpen, onClose, onPaymentSuccess, amount }) => {
             </Badge>
           </CardContent>
         </Card>
-      </motion.div>
+      </Motion.div>
     )
   }
 
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4 z-50"
       onClick={onClose}
     >
-      <motion.div
+      <Motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         className="bg-white/95 backdrop-blur rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-gray-200"
@@ -197,8 +197,8 @@ const PaymentIntegration = ({ isOpen, onClose, onPaymentSuccess, amount }) => {
           <p>🔒 Pagos seguros y encriptados</p>
           <p>💳 Sin comisiones adicionales</p>
         </div>
-      </motion.div>
-    </motion.div>
+      </Motion.div>
+    </Motion.div>
   )
 }
 

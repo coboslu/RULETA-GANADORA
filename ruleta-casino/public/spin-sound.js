@@ -2,7 +2,6 @@
 class RouletteAudio {
   constructor() {
     this.audioContext = null;
-    this.spinSound = null;
     this.winSound = null;
     this.loseSound = null;
     this.initAudio();
@@ -11,31 +10,9 @@ class RouletteAudio {
   initAudio() {
     try {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (e) {
+    } catch {
       console.log('Web Audio API no soportada');
     }
-  }
-
-  // Generar sonido de giro de ruleta
-  createSpinSound() {
-    if (!this.audioContext) return null;
-    
-    const duration = 3.5; // Duración del sonido de giro
-    const sampleRate = this.audioContext.sampleRate;
-    const buffer = this.audioContext.createBuffer(1, duration * sampleRate, sampleRate);
-    const data = buffer.getChannelData(0);
-    
-    for (let i = 0; i < buffer.length; i++) {
-      const t = i / sampleRate;
-      // Sonido de fricción que se desvanece gradualmente
-      const frequency = 200 + Math.sin(t * 50) * 100; // Frecuencia variable
-      const amplitude = Math.exp(-t * 0.8) * 0.1; // Desvanecimiento exponencial
-      const noise = (Math.random() - 0.5) * 0.3; // Ruido para simular fricción
-      
-      data[i] = Math.sin(2 * Math.PI * frequency * t) * amplitude + noise * amplitude;
-    }
-    
-    return buffer;
   }
 
   // Generar sonido de victoria
@@ -80,18 +57,32 @@ class RouletteAudio {
     return buffer;
   }
 
-  // Reproducir sonido de giro
+  // Reproducir sonido de giro con clicks que disminuyen
   playSpinSound() {
     if (!this.audioContext) return;
-    
-    if (!this.spinSound) {
-      this.spinSound = this.createSpinSound();
+
+    const ctx = this.audioContext;
+    const start = ctx.currentTime;
+    const duration = 8; // Duración total del giro
+    const ticks = 40; // Número de clicks
+
+    for (let i = 0; i < ticks; i++) {
+      const progress = i / ticks;
+      const time = start + Math.pow(progress, 2) * duration; // Aumenta el intervalo entre clicks
+
+      const osc = ctx.createOscillator();
+      osc.frequency.value = 1000;
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.3, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.02);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(time);
+      osc.stop(time + 0.02);
     }
-    
-    const source = this.audioContext.createBufferSource();
-    source.buffer = this.spinSound;
-    source.connect(this.audioContext.destination);
-    source.start();
   }
 
   // Reproducir sonido de victoria
